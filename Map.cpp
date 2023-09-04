@@ -8,13 +8,14 @@ Map::Map() {
     mapData = {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-        {'#', 'P', '#', '#', ' ', ' ', ' ', '#', ' ', ' ', 'T', ' ', ' ', '#'},
+        {'#', 'P', '#', '#', ' ', ' ', ' ', '#', ' ', ' ', 'R', ' ', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', '#', ' ', ' ', '#'},
         {'#', ' ', '#', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#'},
         {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'B', ' ', '#'},
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
     };
 }
+
 
 
 char Map::getCell(int x, int y) {
@@ -30,7 +31,11 @@ void Map::printMap() {
     }
 }
 
-bool rollBattleState() {
+void Map::setPlayer(Player* p) {
+    player = p;
+}
+
+bool Map::rollBattleState() {
     bool battle = false;
 
     std::random_device rd; // obtain a random number from hardware
@@ -46,12 +51,12 @@ bool rollBattleState() {
     return battle;
 }
 
-void Map::movePlayer(char direction) {
-    int x = player.getX();
-    int y = player.getY();
+bool Map::movePlayer(char direction) {
+    int x = player->getX();
+    int y = player->getY();
     int previousX = x;
     int previousY = y;
-    
+    bool bossBattle = false;
     // Calculate new position based on direction
     switch (direction) {
         case 'w': // up
@@ -72,20 +77,30 @@ void Map::movePlayer(char direction) {
     if (mapData[y][x] == '#') {
         std::cout << "Hit a wall!\n";
     } else if (mapData[y][x] == 'B') {
-        //Enter Boss battle
-    } else if (mapData[y][x] == 'T') {
-        //Treasure Encounter
+        
+        return bossBattle = true;
+
+    } else if (mapData[y][x] == 'R') {
+        //Rest Encounter
+        std::cout << "You have discovered a cave hidden away from creatures that roam this land\n";
+        std::cout << "You take this oppurtunity to rest and recover your strength\n";
+        std::cout << "You have recovered to full hp " << player->getMaxHealth() << endl;
+        player->rest();
+        std::cout << "Your current hp " << player->getHealth() << endl;
+
     } else {
-        player.setPosition(x, y);
+        player->setPosition(x, y);
         mapData[y][x] = 'P';
         mapData[previousY][previousX] = ' ';
     }
 
     // If moved to a new cell, roll for combat encounter
     // ...
-
     // Redraw map
     printMap();
+    return bossBattle = false;
 }
+
+
 
 

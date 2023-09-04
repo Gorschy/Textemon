@@ -7,13 +7,15 @@
 class Map {
 private:
     std::vector<std::vector<char>> mapData;
-    Player player;
+    Player* player;  // Add this line
 
 public:
     Map();
     char getCell(int x, int y);
     void printMap();
-    void movePlayer(char direction); // New method
+    bool movePlayer(char direction); // New method
+    void setPlayer(Player* p);
+    bool rollBattleState();
 };
 
 #endif

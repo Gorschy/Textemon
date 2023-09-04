@@ -13,11 +13,11 @@
 #include <vector>
 using namespace std;
 
-
 Random random;
 int userInput;
 Player player;
 Map map;
+
 
 void startGame();
 void loadGame();
@@ -40,15 +40,13 @@ std::vector<std::string> loadSprite(const std::string& filename) {
 void loadAllSprites(std::unordered_map<std::string, std::vector<std::string>>& sprites) {
     const std::vector<std::string> spriteNames = {
         "Blastoise", "Bulbasaur", "Cataperie", "Charizard", "Charmander",
-        "Charmeleon", "Death", "Ivysaur", "Squritle", "Vensaur", "Victory", "Wartortle"
+        "Charmeleon", "Death", "Ivysaur", "Squirtle", "Vensaur", "Victory", "Wartortle"
     };
 
     for (const auto& spriteName : spriteNames) {
         sprites[spriteName] = loadSprite("Sprites/" + spriteName + ".txt");
     }
 }
-
-
 
 void slowPrint(const std::string& text, unsigned int milli_seconds)
 {
@@ -97,6 +95,10 @@ void characterSelection() {
 
 }
 
+void victory() {
+    std::cout << "You Win" << endl;
+}
+
 void gameLoop(std::unordered_map<std::string, std::vector<std::string>>& spriteMap) {
     char direction;
     map.printMap();
@@ -105,16 +107,38 @@ void gameLoop(std::unordered_map<std::string, std::vector<std::string>>& spriteM
         //print movement options
         std::cout << "Enter a direction to move (w/s/a/d): ";
         std::cin >> direction;
-        map.movePlayer(direction);
+        bool bossBattle = map.movePlayer(direction);
         int randomNumber = random.getIntInRange(1, 10); // get a random number between 1 and 10
-        
-        if(bool successful = random.rollPercentage(25)) {
-            Player* pPlayer = &player;
+        Player* pPlayer = &player;
+
+        if(bossBattle==true) {
+            Mob* mob = new Mob();
+            BattleState battle(&player, mob, spriteMap);
+            BattleResult result = battle.startBattle();
+            if (result == BattleResult::PLAYER_LOST) {
+                std::cout << "Press any key to return to the main menu.\n";
+                char key;
+                std::cin >> key;
+                mainMenu();
+            } else {
+                victory();
+            }
+
+        }
+
+        if(map.rollBattleState()) {
             Mob* mob = new Mob(); 
             BattleState battle(&player, mob, spriteMap);
-            battle.startBattle(); 
-            
-            } // 25% chance to return true
+            BattleResult result = battle.startBattle();
+            if (result == BattleResult::PLAYER_LOST) {
+                std::cout << "Press any key to return to the main menu.\n";
+                char key;
+                std::cin >> key;
+                mainMenu();
+            } 
+        } // 25% chance to return true
+
+
     }
 }
 
@@ -213,6 +237,8 @@ void mainMenu() {
 int main()
 {
 
+    map.setPlayer(&player);
+    
     mainMenu();
     return 0;
 }

@@ -1,13 +1,6 @@
 About:
 A simple text based RPG built in C++.
 
-Treasure/Equipment Chest
-    - Augment attack
-    - Augment defense
-
-Save/Load
-Character Menu
-
 Art from: 
 https://www.asciiart.eu/
 

@@ -4,17 +4,25 @@
 #include <unordered_map>
 #include <vector>
 #include "Mob.h"
+#include "Player.h"
+
+enum class BattleResult {
+    PLAYER_WON,
+    PLAYER_LOST,
+    PLAYER_FLED
+};
 
 class BattleState {
 private:
-    Mob* player;
+    Player* player;
     Mob* enemy;
     std::unordered_map<std::string, std::vector<std::string>>* spriteMap;
     void drawSprite(const std::string& spriteName);
+    void drawSpritesSideBySide(const std::string& spriteName1, const std::string& spriteName2);
 
 public:
-    BattleState(Mob* player, Mob* enemy, std::unordered_map<std::string, std::vector<std::string>>& sprites);
-    void startBattle();
+    BattleState(Player* player, Mob* enemy, std::unordered_map<std::string, std::vector<std::string>>& sprites);
+    BattleResult startBattle();
 };
 
 #endif
